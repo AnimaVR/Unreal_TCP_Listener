@@ -1,6 +1,6 @@
-#include "CustomHttpListener.h"
+#include "CustomTcpListener.h"
 
-ACustomHttpListener::ACustomHttpListener()
+ACustomTcpListener::ACustomTcpListener()
 {
     PrimaryActorTick.bCanEverTick = false;
     ServerSocket = nullptr;
@@ -8,16 +8,16 @@ ACustomHttpListener::ACustomHttpListener()
     ServerThread = nullptr;
 }
 
-void ACustomHttpListener::BeginPlay()
+void ACustomTcpListener::BeginPlay()
 {
     Super::BeginPlay();
-    StartHttpServer();
+    StartTcpServer();
 }
 
-void ACustomHttpListener::StartHttpServer()
+void ACustomTcpListener::StartTcpServer()
 {
     // Create and bind the server socket
-    ServerSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("HTTPListener"), false);
+    ServerSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("TcpListener"), false);
     TSharedRef<FInternetAddr> ListenAddress = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
 
     bool bIsValid;
@@ -32,20 +32,20 @@ void ACustomHttpListener::StartHttpServer()
 
     // Create and start the thread using FRunnableThread
     ServerRunnable = new FServerRunnable(ServerSocket);
-    ServerRunnable->OnStringReceived().AddUObject(this, &ACustomHttpListener::HandleReceivedString);
-    ServerThread = FRunnableThread::Create(ServerRunnable, TEXT("HttpServerThread"));
-    UE_LOG(LogTemp, Log, TEXT("HTTP server thread started successfully."));
+    ServerRunnable->OnStringReceived().AddUObject(this, &ACustomTcpListener::HandleReceivedString);
+    ServerThread = FRunnableThread::Create(ServerRunnable, TEXT("TcpServerThread"));
+    UE_LOG(LogTemp, Log, TEXT("Tcp server thread started successfully."));
 }
 
-void ACustomHttpListener::HandleReceivedString(const FString& ReceivedString)
+void ACustomTcpListener::HandleReceivedString(const FString& ReceivedString)
 {
     UE_LOG(LogTemp, Log, TEXT("Received string: %s"), *ReceivedString);
     OnStringReceived.Broadcast(ReceivedString);
 }
 
-void ACustomHttpListener::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void ACustomTcpListener::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    UE_LOG(LogTemp, Log, TEXT("Shutting down HTTP listener..."));
+    UE_LOG(LogTemp, Log, TEXT("Shutting down Tcp listener..."));
 
     // Signal the thread to stop
     if (ServerRunnable)
@@ -78,17 +78,17 @@ void ACustomHttpListener::EndPlay(const EEndPlayReason::Type EndPlayReason)
         ServerSocket = nullptr;
     }
 
-    UE_LOG(LogTemp, Log, TEXT("HTTP listener shut down successfully."));
+    UE_LOG(LogTemp, Log, TEXT("Tcp listener shut down successfully."));
     Super::EndPlay(EndPlayReason);
 }
 
-uint32 ACustomHttpListener::FServerRunnable::Run()
+uint32 ACustomTcpListener::FServerRunnable::Run()
 {
     ListenForConnections();
     return 0;
 }
 
-void ACustomHttpListener::FServerRunnable::ListenForConnections()
+void ACustomTcpListener::FServerRunnable::ListenForConnections()
 {
     UE_LOG(LogTemp, Log, TEXT("Server is listening on 127.0.0.1:7777"));
 
