@@ -6,25 +6,25 @@
 #include "SocketSubsystem.h"
 #include "HAL/Runnable.h"
 #include "Async/Async.h"
-#include "CustomHttpListener.generated.h"
+#include "CustomTcpListener.generated.h"
 
 // Delegate to broadcast the received string to Blueprints
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStringReceived, const FString&, ReceivedString);
 
 UCLASS()
-class MAGEGAME_API ACustomHttpListener : public AActor
+class MAGEGAME_API ACustomTcpListener : public AActor
 {
     GENERATED_BODY()
 
 public:
-    ACustomHttpListener();
+    ACustomTcpListener();
 
 protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     // Start the server
-    void StartHttpServer();
+    void StartTcpServer();
 
 public:
     // Expose the received string to Blueprints
