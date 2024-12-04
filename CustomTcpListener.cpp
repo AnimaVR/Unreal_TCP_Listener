@@ -12,7 +12,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStringReceived, const FString&, ReceivedString);
 
 UCLASS()
-class MAGEGAME_API ACustomTcpListener : public AActor
+class YOUR_PROJECT_NAME_API ACustomTcpListener : public AActor
 {
     GENERATED_BODY()
 
